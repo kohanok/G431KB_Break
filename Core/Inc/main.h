@@ -45,6 +45,10 @@ enum { false, true };
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+#define B_LED_CNT 20
+#define R_LED_CNT 128
+
+#define INT_BITS 	20
 
 /* USER CODE END EC */
 
@@ -64,6 +68,16 @@ int rotateRight(int num, unsigned int rotation);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define B_NP_Pin GPIO_PIN_0
+#define B_NP_GPIO_Port GPIOA
+#define CE0_Pin GPIO_PIN_4
+#define CE0_GPIO_Port GPIOA
+#define R_NP_Pin GPIO_PIN_7
+#define R_NP_GPIO_Port GPIOA
+#define SWDIO_Pin GPIO_PIN_13
+#define SWDIO_GPIO_Port GPIOA
+#define SWCLK_Pin GPIO_PIN_14
+#define SWCLK_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

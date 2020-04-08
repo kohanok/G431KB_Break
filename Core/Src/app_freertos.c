@@ -26,12 +26,18 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
-
+#include "ws2812.h"
+//#include "as5048x.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+//extern #define B_LED_CNT 20
+//extern R_LED_CNT 128
 
+//extern #define INT_BITS 	20
+bool g_break_flg = false;
+uint32_t g_speed = 0;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -119,8 +125,79 @@ void StartBreak_Task(void const * argument)
 {
   /* USER CODE BEGIN StartBreak_Task */
   /* Infinite loop */
+
+  uint32_t pre_time = 0;
+  uint32_t led_time = 200;
+	uint32_t firstled = 0;
+	uint32_t halfled = 0;
+	uint32_t led_index = 0;
+	uint32_t led_mask= 0b1110000111;
+
+
+	bool led_flg=false;
+	uint32_t led_count = 0;
   for(;;)
   {
+
+		if(millis()-pre_time >= led_time)
+		{
+			pre_time = millis();
+			if(g_break_flg == false) {
+				/*
+				if(g_speed < 1000) {
+					led_time = 200;
+				}
+				else {
+					led_time = 50;
+				}*/
+				led_time = g_speed/10;
+				if(led_time < 50)
+					led_time = 50;
+				led_count = 0;
+				firstled = rotateLeft(led_mask, led_index%B_LED_CNT);
+				halfled = rotateRight(led_mask, led_index%B_LED_CNT);
+
+				led_index++;
+				for(uint32_t j=0; j<12; j++) {
+					if( firstled >> j & 0x01){
+							ws2812SetColor(j, 255, 255, 255);
+					}else {
+						ws2812SetColor(j, 0, 0, 0);
+					}
+				}
+				for(uint32_t j=20; j>11; j--) {
+					if( halfled >> (j-11) & 0x01){
+							ws2812SetColor(j, 255, 255, 255);
+					}else {
+						ws2812SetColor(j, 0, 0, 0);
+					}
+				}
+			}
+			else{ // break
+				led_count++;
+				if(led_count > 30) {
+					led_time = 500;
+				}else {
+					led_time = 50;
+				}
+				if(led_count > 40) {
+						//led_count = 0;
+						g_break_flg =false;
+				}
+
+				if(led_flg) {
+					for(int i = 0; i < B_LED_CNT; i++) {
+						ws2812SetColor(i, 255, 0, 0);
+						led_flg = false;
+					}
+				}else {
+					for(int i = 0; i < B_LED_CNT; i++) {
+						ws2812SetColor(i, 0, 0, 0);
+						led_flg = true;
+					}
+				}
+			}
+		}
     osDelay(1);
   }
   /* USER CODE END StartBreak_Task */
@@ -137,10 +214,55 @@ void StartRainBow_Task(void const * argument)
 {
   /* USER CODE BEGIN StartRainBow_Task */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+
+	uint32_t rainbow_pre_time=0;
+	uint32_t rainbow_led_time=10;
+	bool led_flg=false;
+	uint32_t led_count = 0;
+	for(;;)
+	{
+		uint16_t i, j;
+		for(j=0; j<256*5;) { // 5 cycles of all colors on wheel
+			if(millis()-rainbow_pre_time >= rainbow_led_time)
+			{
+				rainbow_pre_time = millis();
+				j++;
+				led_count = 0;
+				rainbow_led_time = 10;
+				if(g_break_flg == false) {
+					led_count = 0;
+					for(i=0; i< R_LED_CNT; i++) {
+						setPixelColor(i, Wheel(((i * 256 / R_LED_CNT) + j) & 255));
+					}
+				}
+				else{ // break
+					led_count++;
+					if(led_count > 30) {
+						rainbow_led_time = 500;
+					}else {
+						rainbow_led_time = 50;
+					}
+					if(led_count > 40) {
+							//led_count = 0;
+							g_break_flg =false;
+					}
+
+					if(led_flg) {
+						for(int i = 0; i < B_LED_CNT; i++) {
+							setPixelColor(i, 0xff0000);
+							led_flg = false;
+						}
+					}else {
+						for(int i = 0; i < B_LED_CNT; i++) {
+							setPixelColor(i, 0);
+							led_flg = true;
+						}
+					}
+				}
+			}
+		}
+		osDelay(1);
+	}
   /* USER CODE END StartRainBow_Task */
 }
 
@@ -155,8 +277,25 @@ void StartAS504X_Task(void const * argument)
 {
   /* USER CODE BEGIN StartAS504X_Task */
   /* Infinite loop */
+  uint32_t Task03_pre_time = 0;
+  uint32_t Task03_led_time = 100;
+  //uint32_t speed = 0;
   for(;;)
   {
+		if (millis()-Task03_pre_time >= Task03_led_time)
+		{
+			Task03_pre_time = millis();
+			g_speed += 10;
+			if(g_speed>1000) {
+				g_speed = 0;
+			}
+			if(g_break_flg == false) {
+				//g_break_flg = true;
+			}
+			else {
+				g_break_flg = false;
+			}
+		}
     osDelay(1);
   }
   /* USER CODE END StartAS504X_Task */
