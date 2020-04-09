@@ -74,6 +74,8 @@ int rotateRight(int num, unsigned int rotation);
 #define CE0_GPIO_Port GPIOA
 #define R_NP_Pin GPIO_PIN_7
 #define R_NP_GPIO_Port GPIOA
+#define LED_Pin GPIO_PIN_8
+#define LED_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
