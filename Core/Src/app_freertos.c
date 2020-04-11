@@ -44,7 +44,7 @@ uint32_t g_speed = 0;
 
 extern uint16_t zero_position;
 extern float zero_position_map;
-
+uint16_t old_angle;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -234,7 +234,6 @@ void StartRainBow_Task(void const * argument)
 			{
 				rainbow_pre_time = millis();
 				j++;
-				led_count = 0;
 				rainbow_led_time = 10;
 				if(g_break_flg == 0) {
 					led_count = 0;
@@ -244,12 +243,12 @@ void StartRainBow_Task(void const * argument)
 				}
 				else{ // break
 					led_count++;
-					if(led_count > 30) {
+					if(led_count > 20) {
 						rainbow_led_time = 500;
 					}else {
 						rainbow_led_time = 50;
 					}
-					if(led_count > 40) {
+					if(led_count > 30) {
 							//led_count = 0;
 							g_break_flg = 0;
 					}
@@ -286,37 +285,27 @@ void StartAS504X_Task(void const * argument)
   /* Infinite loop */
 
   uint32_t Task03_pre_time = 0;
-  uint32_t Task03_led_time = 100;
+  uint32_t Task03_led_time = 1000;
   //uint32_t speed = 0;
 
   for(;;)
   {
-  	/*
+
 		if (millis()-Task03_pre_time >= Task03_led_time)
 		{
 			Task03_pre_time = millis();
-			g_speed += 10;
-			if(g_speed>1000) {
-				g_speed = 0;
-			}
-			if(g_break_flg == 1) {
-				//g_break_flg = 0;
-			}
-			else {
-				g_break_flg = 0;
-			}
+		  uint16_t current_angle = as504x_getRawRotation();
+		  float current_angle_map = as504x_read2angle(current_angle);
+
+		  float angle = current_angle_map - zero_position_map;
+		  angle = as504x_normalize(angle);
+		  if( (angle - old_angle) > 10)
+		  	g_break_flg = 1;
+		  //else
+		  	//g_break_flg = 0;
+			old_angle = angle;
 		}
-		*/
 
-	  uint16_t current_angle = as504x_getRawRotation();
-	  float current_angle_map = as504x_read2angle(current_angle);
-
-	  float angle = current_angle_map - zero_position_map;
-	  angle = as504x_normalize(angle);
-	  if( angle > 180)
-	  	g_break_flg = 1;
-	  else
-	  	g_break_flg = 0;
 /*
 		if(angle>100) {
 			g_speed = 0;
