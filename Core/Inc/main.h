@@ -38,8 +38,8 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-typedef int bool;
-enum { false, true };
+//typedef int bool;
+//enum {false, true};
 
 /* USER CODE END ET */
 

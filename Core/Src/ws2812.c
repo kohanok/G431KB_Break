@@ -27,12 +27,12 @@ extern TIM_HandleTypeDef htim17;
 
 
 
-bool ws2812Init(void)
+_Bool ws2812Init(void)
 {
   memset(led_buf, 0, sizeof(led_buf));
   memset(led_buf_rainbow, 0, sizeof(led_buf));
 
-  return true;
+  return 0;
 }
 
 void ws2812Begin(uint32_t break_led_cnt, uint32_t ranbow_led_cnt)

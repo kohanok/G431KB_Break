@@ -1,4 +1,4 @@
-app_freertos.c:77:6:MX_FREERTOS_Init	80	static
-app_freertos.c:124:6:StartBreak_Task	64	static
-app_freertos.c:213:6:StartRainBow_Task	48	static
-app_freertos.c:276:6:StartAS504X_Task	24	static
+app_freertos.c:84:6:MX_FREERTOS_Init	80	static
+app_freertos.c:131:6:StartBreak_Task	64	static
+app_freertos.c:220:6:StartRainBow_Task	48	static
+app_freertos.c:283:6:StartAS504X_Task	40	static

@@ -114,7 +114,7 @@ uint8_t		gOffset;    ///< Index of green byte
 uint8_t		bOffset;    ///< Index of blue byte
 uint8_t		wOffset;    ///< Index of white (==rOffset if no white)
 
-bool ws2812Init(void);
+_Bool ws2812Init(void);
 void ws2812Begin(uint32_t break_led_cnt, uint32_t ranbow_led_cnt);
 void ws2812SetColor(uint32_t index, uint8_t red, uint8_t green, uint8_t blue);
 void ws2812SetRanbowColor(uint32_t index, uint8_t red, uint8_t green, uint8_t blue);

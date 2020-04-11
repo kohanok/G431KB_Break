@@ -27,7 +27,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
 #include "ws2812.h"
-//#include "as5048x.h"
+#include "as504x.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,8 +37,14 @@
 //extern R_LED_CNT 128
 
 //extern #define INT_BITS 	20
-bool g_break_flg = false;
+
+
+_Bool g_break_flg = 0;
 uint32_t g_speed = 0;
+
+extern uint16_t zero_position;
+extern float zero_position_map;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -134,7 +141,7 @@ void StartBreak_Task(void const * argument)
 	uint32_t led_mask= 0b1110000111;
 
 
-	bool led_flg=false;
+	_Bool led_flg=0;
 	uint32_t led_count = 0;
   for(;;)
   {
@@ -142,7 +149,7 @@ void StartBreak_Task(void const * argument)
 		if(millis()-pre_time >= led_time)
 		{
 			pre_time = millis();
-			if(g_break_flg == false) {
+			if(g_break_flg == 0) {
 				/*
 				if(g_speed < 1000) {
 					led_time = 200;
@@ -182,18 +189,18 @@ void StartBreak_Task(void const * argument)
 				}
 				if(led_count > 40) {
 						//led_count = 0;
-						g_break_flg =false;
+						g_break_flg = 0;
 				}
 
 				if(led_flg) {
 					for(int i = 0; i < B_LED_CNT; i++) {
 						ws2812SetColor(i, 255, 0, 0);
-						led_flg = false;
+						led_flg = 0;
 					}
 				}else {
 					for(int i = 0; i < B_LED_CNT; i++) {
 						ws2812SetColor(i, 0, 0, 0);
-						led_flg = true;
+						led_flg = 1;
 					}
 				}
 			}
@@ -217,7 +224,7 @@ void StartRainBow_Task(void const * argument)
 
 	uint32_t rainbow_pre_time=0;
 	uint32_t rainbow_led_time=10;
-	bool led_flg=false;
+	_Bool led_flg=0;
 	uint32_t led_count = 0;
 	for(;;)
 	{
@@ -229,7 +236,7 @@ void StartRainBow_Task(void const * argument)
 				j++;
 				led_count = 0;
 				rainbow_led_time = 10;
-				if(g_break_flg == false) {
+				if(g_break_flg == 0) {
 					led_count = 0;
 					for(i=0; i< R_LED_CNT; i++) {
 						setPixelColor(i, Wheel(((i * 256 / R_LED_CNT) + j) & 255));
@@ -244,18 +251,18 @@ void StartRainBow_Task(void const * argument)
 					}
 					if(led_count > 40) {
 							//led_count = 0;
-							g_break_flg =false;
+							g_break_flg = 0;
 					}
 
 					if(led_flg) {
 						for(int i = 0; i < B_LED_CNT; i++) {
 							setPixelColor(i, 0xff0000);
-							led_flg = false;
+							led_flg = 0;
 						}
 					}else {
 						for(int i = 0; i < B_LED_CNT; i++) {
 							setPixelColor(i, 0);
-							led_flg = true;
+							led_flg = 1;
 						}
 					}
 				}
@@ -277,11 +284,14 @@ void StartAS504X_Task(void const * argument)
 {
   /* USER CODE BEGIN StartAS504X_Task */
   /* Infinite loop */
+
   uint32_t Task03_pre_time = 0;
   uint32_t Task03_led_time = 100;
   //uint32_t speed = 0;
+
   for(;;)
   {
+  	/*
 		if (millis()-Task03_pre_time >= Task03_led_time)
 		{
 			Task03_pre_time = millis();
@@ -289,15 +299,44 @@ void StartAS504X_Task(void const * argument)
 			if(g_speed>1000) {
 				g_speed = 0;
 			}
-			if(g_break_flg == false) {
-				//g_break_flg = true;
+			if(g_break_flg == 1) {
+				//g_break_flg = 0;
 			}
 			else {
-				g_break_flg = false;
+				g_break_flg = 0;
 			}
 		}
+		*/
+
+	  uint16_t current_angle = as504x_getRawRotation();
+	  float current_angle_map = as504x_read2angle(current_angle);
+
+	  float angle = current_angle_map - zero_position_map;
+	  angle = as504x_normalize(angle);
+	  if( angle > 180)
+	  	g_break_flg = 1;
+	  else
+	  	g_break_flg = 0;
+/*
+		if(angle>100) {
+			g_speed = 0;
+		}
+		if(g_break_flg == 1) {
+			//g_break_flg = 0;
+		}
+		else {
+			g_break_flg = 0;
+		}
+	  //printf("Current Angle: %d\nCurrent Angle Map: %f\nAngle: %f\n\n", current_angle, current_angle_map, angle);
+
+	  if (as504x_error()) {
+		  //printf("ERROR: %d\n", as504x_getErrors());
+	  }
+
+*/
     osDelay(1);
   }
+
   /* USER CODE END StartAS504X_Task */
 }
 

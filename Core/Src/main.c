@@ -35,12 +35,13 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+SPI_HandleTypeDef hspi1;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+uint16_t zero_position;
+float zero_position_map;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -102,7 +103,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   ws2812Init();
   ws2812Begin(B_LED_CNT, R_LED_CNT);
-
+  zero_position = as504x_getRawRotation();
+  //printf("Zero: %d\n", zero_position);
+  zero_position_map = as504x_read2angle(zero_position);
+  //printf("Angle: %f\n", zero_position_map);
 	//uint32_t led_index=0;
   /* USER CODE END 2 */
 
@@ -141,11 +145,12 @@ void SystemClock_Config(void)
   HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV4;
   RCC_OscInitStruct.PLL.PLLN = 85;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
