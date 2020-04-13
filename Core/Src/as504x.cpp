@@ -1,5 +1,6 @@
 #include "as504x.h"
 #include "main.h"
+#include <math.h>
 
 /* Private defines -----------------------------------------------------------*/
 
@@ -30,7 +31,7 @@ as504x_AS5048A(SPI_HandleTypeDef* hspi, GPIO_TypeDef* arg_ps, uint16_t arg_cs){
 */
 #define EN_SPI HAL_GPIO_WritePin(CE0_GPIO_Port, CE0_Pin, GPIO_PIN_RESET);
 #define DIS_SPI HAL_GPIO_WritePin(CE0_GPIO_Port, CE0_Pin, GPIO_PIN_SET);
-
+#define PI	3.14159265358979323846
 /**
  * Initialiser
  * Sets up the SPI interface
@@ -278,3 +279,20 @@ float as504x_read2angle(uint16_t angle) {
 	 */
 	return (float)angle * ((float)360 / 16383);
 };
+
+
+int as504x_degrees(uint16_t sensor_result)
+{
+    return as504x_mask(sensor_result) * 36000 / 0x4000;
+}
+
+
+float as504x_radian(float angle)
+{
+    return (angle * PI) / 180;
+}
+
+int as504x_mask(uint16_t sensor_result)
+{
+    return sensor_result & 0x3FFF; // return lowest 14-bits
+}

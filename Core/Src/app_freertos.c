@@ -37,7 +37,7 @@
 //extern R_LED_CNT 128
 
 //extern #define INT_BITS 	20
-
+#define PI	3.14159265358979323846
 
 _Bool g_break_flg = 0;
 uint32_t g_speed = 0;
@@ -45,6 +45,7 @@ uint32_t g_speed = 0;
 extern uint16_t zero_position;
 extern float zero_position_map;
 uint16_t old_angle;
+int32_t old_rotation = 0;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -294,16 +295,35 @@ void StartAS504X_Task(void const * argument)
 		if (millis()-Task03_pre_time >= Task03_led_time)
 		{
 			Task03_pre_time = millis();
+			// max 14bit = 16383 dec
 		  uint16_t current_angle = as504x_getRawRotation();
 		  float current_angle_map = as504x_read2angle(current_angle);
 
-		  float angle = current_angle_map - zero_position_map;
-		  angle = as504x_normalize(angle);
-		  if( (angle - old_angle) > 10)
-		  	g_break_flg = 1;
+
+			float angle = current_angle_map - zero_position_map;
+			//angle = as504x_normalize(angle);
+
+			float radian = as504x_radian(angle);
+		  // set new zero position
+			float rpm = radian/((2*PI)/60);
+		  as504x_setZeroPosition(current_angle);
+		  zero_position = current_angle;
+			//zero_position = angleSensor.getRawRotation();
+			zero_position_map = as504x_read2angle(zero_position);
+
+
+
+		  //int current_rotation1 = as504x_normalize(as504x_read2angle(current_angle));
+		  //float n_radian = as504x_radian(current_rotation);
+		  //old_rotation = current_rotation;
+
+		  //float angle = current_angle_map - zero_position_map;
+		  //angle = as504x_normalize(angle);
+		  //if( (angle - old_angle) > 10)
+		  	//g_break_flg = 1;
 		  //else
 		  	//g_break_flg = 0;
-			old_angle = angle;
+			//old_angle = angle;
 		}
 
 /*

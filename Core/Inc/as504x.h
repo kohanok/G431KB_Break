@@ -132,8 +132,9 @@ float as504x_normalize(float angle);
  */
 float as504x_read2angle(uint16_t angle);
 uint8_t as504x_spiCalcEvenParity(uint16_t value);
-
-
+int as504x_degrees(uint16_t sensor_result);
+float as504x_radian(float angle);
+int as504x_mask(uint16_t sensor_result);
 /* Private defines -----------------------------------------------------------*/
 
 
